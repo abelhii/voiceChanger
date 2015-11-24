@@ -11,8 +11,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
-var audioRecorder = null, inputPoint = null;
+var audioContext = new AudioContext();
+var audioRecorder = null, inputPoint = null, zeroGain = null;
+var buff = null;
 
 var p = navigator.mediaDevices.getUserMedia({audio: true, video: false});
 
@@ -21,8 +24,8 @@ p.then(function(mediaStream){
     audio.src = window.URL.createObjectURL(mediaStream);
     audio.onloadedmetadata = function(e){
         //do something
+        gotStream(mediaStream);
     }
-    gotStream(mediaStream);
 });
 
 p.catch(function(e) {alert("not working"); console.log(e.name); }); //check for errors at the end
@@ -36,13 +39,21 @@ function gotStream(stream){
     audioInput = realAudioInput;
     audioInput.connect(inputPoint);
 
+    //audioInput = convertToMono( input );
+
+    //analyserNode for visual representation
+    analyserNode = audioContext.createAnalyser();
+    analyserNode.fftSize = 2048;
+    inputPoint.connect( analyserNode );
+
     audioRecorder = new Recorder(inputPoint);
 
     zeroGain = audioContext.createGain();
     zeroGain.gain.value = 0.0;
     inputPoint.connect( zeroGain );
     zeroGain.connect( audioContext.destination );
-    updateAnalysers();
+    //updateAnalysers();
+    //alert("poo");
 }
 
 
@@ -52,31 +63,33 @@ function toggleRecording( e ){
     if (e.classList.contains("recording")) {
         // stop recording
         e.classList.remove("recording");
-        audioRecorder.stop();
-        audioRecorder.getBuffers( gotBuffers );
+        this.audioRecorder.stop();
+        this.audioRecorder.getBuffers( gotBuffers );
+        buff = gotBuffers;
+        alert("hello");
     } else {
         // start recording
-        //if (!audioRecorder)
-          //  return;
+        if (!audioRecorder){
+            alert(audioRecorder);
+            return;
+        }
         e.classList.add("recording");
         audioRecorder.clear();
         audioRecorder.record();
     }
 }
 
+
+
 function play(){    
     alert("play");
-    var audio = document.getElementById("recordedAudio");
-    audio.play(audioRecorder.getBuffers( playSound ));
+    playSound(buff);
+    //var audio = document.getElementById("recordedAudio");
+    //audio.play(playSound());
 }
 
-function playSound(buffer) {
-    var source = context.createBufferSource(); // creates a sound source
-    source.buffer = buffer;                    // tell the source which sound to play
-    source.connect(context.destination);       // connect the source to the context's destination (the speakers)
-    source.start(0);                           // play the source now
-                                             // note: on older systems, may have to use deprecated noteOn(time);
-/**
+var analyserNode = null;
+function playSound(buffer) {  
     var newSource = audioContext.createBufferSource();
     var newBuffer = audioContext.createBuffer( 2, buffers[0].length, audioContext.sampleRate );
     newBuffer.getChannelData(0).set(buffers[0]);
@@ -84,7 +97,7 @@ function playSound(buffer) {
     newSource.buffer = newBuffer;
 
     newSource.connect( audioContext.destination );
-    newSource.start(0);*/
+    newSource.start(0);
 }
 
 function gotBuffers( buffers ) {
