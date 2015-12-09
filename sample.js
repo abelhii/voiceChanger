@@ -38,10 +38,12 @@ function saveAudio() {
 }
 
 function gotBuffers( buffers ) {
+    alert("hello");
     var canvas = document.getElementById( "wavedisplay" );
 
+    alert("hello");
     drawBuffer( canvas.width, canvas.height, canvas.getContext('2d'), buffers[0] );
-
+    alert("hello");
     // the ONLY time gotBuffers is called is right after a new recording is completed - 
     // so here's where we should set up the download.
     audioRecorder.exportWAV( doneEncoding );

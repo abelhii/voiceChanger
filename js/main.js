@@ -14,25 +14,23 @@
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 var audioContext = new AudioContext();
-var audioRecorder = null, realAudioInput = null,inputPoint = null, zeroGain = null;;
+var audioInput = null
+var audioRecorder = null, realAudioInput = null, inputPoint = null, zeroGain = null;;
 var rafID = null;
 var analyserContext = null;
 var canvasWidth, canvasHeight;
 var recIndex = 0;
-var buff = null;
 
 //**************INIT AUDIO**********//
 var p = navigator.mediaDevices.getUserMedia({audio: true, video: false});
 
 p.then(function(mediaStream){
-    gotStream(mediaStream);
-    /**
     var audio = document.getElementById('liveAudio');
     audio.src = window.URL.createObjectURL(mediaStream);
     audio.onloadedmetadata = function(e){
         //do something
         gotStream(mediaStream);
-    }*/
+    }
 });
 
 p.catch(function(e) {alert("no mic detected"); console.log(e.name); }); //check for errors 
@@ -45,18 +43,7 @@ function saveAudio() {
     // audioRecorder.exportMonoWAV( doneEncoding );
 }
 
-function gotBuffers( buffers ) {
-    var canvas = document.getElementById( "wavedisplay" );
-
-    drawBuffer( canvas.width, canvas.height, canvas.getContext('2d'), buffers[0] );
-
-    // the ONLY time gotBuffers is called is right after a new recording is completed - 
-    // so here's where we should set up the download.
-    audioRecorder.exportWAV( doneEncoding );
-}
-
 function doneEncoding( blob ) {
-    alert("hello");
     Recorder.setupDownload( blob, "myRecording" + ((recIndex<10)?"0":"") + recIndex + ".wav" );
     recIndex++;
 }
@@ -67,14 +54,13 @@ function toggleRecording( e ){
         audioRecorder.stop();
         e.classList.remove("recording");
         audioRecorder.exportWAV( doneEncoding );
-        //audioRecorder.getBuffers( gotBuffers );
     } else {
         // start recording
         if (!audioRecorder){
             return;
         }
         e.classList.add("recording");
-        audioRecorder.clear();
+        //audioRecorder.clear();
         audioRecorder.record();
     }
 
@@ -111,13 +97,14 @@ function toggleMono() {
 
 //live streams voice!
 function gotStream(stream){
+    if (!audioContext.createGain)
+        audioContext.createGain = audioContext.createGainNode;
     inputPoint = audioContext.createGain();
 
     // Create an AudioNode from the stream.
     realAudioInput = audioContext.createMediaStreamSource(stream);
     audioInput = realAudioInput;
     audioInput.connect(inputPoint);
-
     //audioInput = convertToMono( input );
 
     //analyserNode for visual representation
@@ -126,7 +113,7 @@ function gotStream(stream){
     inputPoint.connect( analyserNode );
 
     audioRecorder = new Recorder(inputPoint);
-    
+
     zeroGain = audioContext.createGain();
     zeroGain.gain.value = 0.0;
     inputPoint.connect( zeroGain );
@@ -134,6 +121,7 @@ function gotStream(stream){
 
     updateAnalysers();
 }
+
 
 //For the fancy graphics
 function updateAnalysers(time) {
@@ -175,27 +163,9 @@ function updateAnalysers(time) {
     rafID = window.requestAnimationFrame( updateAnalysers );
 }
 
-/**
-function play(){    
-    alert("play");
-    //playSound(buff);
 
-    Fr.voice.export(function(url){
-      $("#audio").attr("src", url);
-      $("#audio")[0].play();
-    }, "URL");
-    //var audio = document.getElementById("recordedAudio");
-    //audio.play(playSound());
-}
- $(document).on("click", "#play:not(.disabled)", function(){
-    Fr.voice.export(function(url){
-      $("#audio").attr("src", url);
-      $("#audio")[0].play();
-    }, "URL");
-    restore();
-  });
-
-  function playSound(buffer) {  
+//To play back
+function getBufferCallback( buffers ) {
     var newSource = audioContext.createBufferSource();
     var newBuffer = audioContext.createBuffer( 2, buffers[0].length, audioContext.sampleRate );
     newBuffer.getChannelData(0).set(buffers[0]);
@@ -206,4 +176,123 @@ function play(){
     newSource.start(0);
 }
 
-*/
+function playEncoding(blob){
+    Recorder.forceDownload( blob, "play.wav" );
+}
+
+
+/**
+var filter = null;
+var FilterOne = {
+  FREQ_MUL: 7000,
+  QUAL_MUL: 30,
+  playing: false
+};
+
+FilterOne.play = function(){
+    // Create the filter.
+    filter = audioContext.createBiquadFilter();
+    //filter.type is defined as string type in the latest API. But this is defined as number type in old API.
+    filter.type = (typeof filter.type === 'string') ? 'lowpass' : 0; // LOWPASS
+    filter.frequency.value = 5000;
+    // Connect source to filter, filter to destination.
+    audioInput.connect(filter);
+    filter.connect(audioContext.destination);
+
+
+    // Save source and filterNode for later access.
+    //this.audioInput = audioInput;
+    //this.filter = filter;
+};
+
+FilterOne.changeFrequency = function(element) {
+    // Clamp the frequency between the minimum value (40 Hz) and half of the
+    // sampling rate.
+    var minValue = 40;
+    var maxValue = audioContext.sampleRate / 2;
+    // Logarithm (base 2) to compute how many octaves fall in the range.
+    var numberOfOctaves = Math.log(maxValue / minValue) / Math.LN2;
+    // Compute a multiplier from 0 to 1 based on an exponential scale.
+    var multiplier = Math.pow(2, numberOfOctaves * (element.value - 1.0));
+    // Get back to the frequency value between min and max.
+    filter.frequency.value = maxValue * multiplier;
+};
+
+FilterOne.toggleFilter = function(element) {
+  this.audioInput.disconnect(0);
+  this.filter.disconnect(0);
+  // Check if we want to enable the filter.
+  if (element.checked) {
+    // Connect through the filter.
+    this.audioInput.connect(this.filter);
+    this.filter.connect(audioContext.destination);
+  } else {
+    // Otherwise, connect directly.
+    this.audioInput.connect(audioContext.destination);
+  }
+};
+
+**/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function play(e){    
+    if (e.classList.contains("playing")) {
+        // stop playing
+        e.classList.remove("playing");
+        //this just changes the image:
+        e.src="imgs/playBtn.png";
+    } else {
+        // start playing
+        e.classList.add("playing");
+        e.src="imgs/pause.png";
+    }
+/*
+    var audio = document.getElementById('playAudio');
+    audio.src = getBufferCallback(audioRecorder.getBuffers);
+    audio.play();
+    audio.onloadedmetadata = function(e){
+        //do something
+    }*/
+}
+
+/**
+  $(document).on("click", "#play:not(.disabled)", function(){
+    Fr.voice.export(function(url){
+      $("#audio").attr("src", url);
+      $("#audio")[0].play();
+    }, "URL");
+    restore();
+  });
+  
+  $(document).on("click", "#download:not(.disabled)", function(){
+    Fr.voice.export(function(url){
+      $("<a href='"+url+"' download='MyRecording.wav'></a>")[0].click();
+    }, "URL");
+    restore();
+  });
+  */

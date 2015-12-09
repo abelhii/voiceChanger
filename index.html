@@ -1,32 +1,33 @@
-<!--
-	Resources used:
-	http://www.html5rocks.com/en/tutorials/getusermedia/intro/
-	http://webaudiodemos.appspot.com/AudioRecorder/index.html
-
--->
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html> 
 
 <head>
-	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<meta charset="UTF-8"> 
 	<title>Voice Changer</title>
 
 	<link rel="stylesheet" href="style.css">
-	<script type="text/javascript" src="Recorderjs-master/recorder.js"></script>
-	<script type="text/javascript" src="main.js"></script>
+	<link rel="stylesheet" href="style2.css">
+	<script src="js/audiodisplay.js"></script>
+	<script src="js/recorderjs/recorder.js"></script>
+	<script src="js/main.js"></script>
+	<script src="js/filter.js"></script>
+	
 </head>
 
 <body>
 	<div id="recordAudio">
-      	<p>Record monitor volume: <input type="range" max="1" step="0.1" value="0" onchange="changeVolume(this.value)"/></p>
 		<p>
-			<audio id="liveAudio" controls autoplay muted>your browser doesnt support the audio element.</audio>
+			<audio id="liveAudio" src="" controls autoplay muted>your browser doesnt support the audio element.</audio>
 			<img id="record" onclick="toggleRecording(this)" src="imgs/record.png"></img>
-			<img id="playSound" onclick="play()" src="imgs/playBtn.png"></img>
-			<audio id="recordedAudio">your browser doesnt support the audio element.</audio>
-			<canvas id="wavedisplay" width="1024" height="300"></canvas>
-            <legend>RECORD AUDIO</legend>
+			<a id="save" href="#"><img src="imgs/save.png"></a>
+			<img id="playSound" onclick="play(this)" src="imgs/playBtn.png"></img>
+			<audio id="playAudio" src="" controls>your browser doesnt support the audio element.</audio>
+			<!--Filter function-->
+			Frequency:
+			<input type="range" id="frequency" oninput="FilterOne.changeFrequency(this);" min="0" max="1" step="0.01" value="1" >
+			<input checked="true" oninput="FilterOne.toggleFilter(this);" type="checkbox">
     	</p>
+			<canvas id="analyser" width="1024" height="300"></canvas>
 	</div>
 
 </body>
