@@ -23,9 +23,12 @@
 			<img id="playSound" onclick="play(this)" src="imgs/playBtn.png"></img>
 			<audio id="playAudio" src="" controls>your browser doesnt support the audio element.</audio>
 			<!--Filter function-->
-			Frequency:
+			</br><input type="button" id="filterOneBtn"onclick="FilterOne.toggle()" value="turn filter on">
+			</br>Frequency:
 			<input type="range" id="frequency" oninput="FilterOne.changeFrequency(this);" min="0" max="1" step="0.01" value="1" >
-			<input checked="true" oninput="FilterOne.toggleFilter(this);" type="checkbox">
+			</br>Quality:
+			<input type="range" id="quality" oninput="FilterOne.changeQuality(this);" min="0" max="1" step="0.01" value="1" >
+			<!--<input checked="true" oninput="FilterOne.toggleFilter(this);" type="checkbox">-->
     	</p>
 			<canvas id="analyser" width="1024" height="300"></canvas>
 	</div>

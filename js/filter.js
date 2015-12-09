@@ -24,23 +24,6 @@ var FilterOne = {
   // Save source and filterNode for later access.
   this.source = source;
   this.filter = filter;
-};*/
-
-FilterOne.play = function(){
-
-    // Create the filter.
-    filter = audioContext.createBiquadFilter();
-    //filter.type is defined as string type in the latest API. But this is defined as number type in old API.
-    filter.type = (typeof filter.type === 'string') ? 'lowpass' : 0; // LOWPASS
-    filter.frequency.value = 5000;
-    // Connect source to filter, filter to destination.
-    audioInput.connect(filter);
-    filter.connect(audioContext.destination);
-
-
-    // Save source and filterNode for later access.
-    this.audioInput = audioInput;
-    this.filter = filter;
 };
 
 FilterOne.stop = function() {
@@ -48,15 +31,52 @@ FilterOne.stop = function() {
     this.source.stop = source.noteOff;
   this.source.stop(0);
   this.source.noteOff(0);
+};*/
+
+FilterOne.play = function(){
+    // Create the source.
+    //var source = audioContext.createBufferSource();
+    //source.buffer = audioInput.getBuffer;
+    // Create the filter.
+    filter = audioContext.createBiquadFilter();
+    //filter.type is defined as string type in the latest API. But this is defined as number type in old API.
+    filter.type = (typeof filter.type === 'string') ? 'lowpass' : 0; // LOWPASS
+    filter.frequency.value = 5000;
+    // Connect source/audioInput to filter, filter to destination.
+    audioInput.connect(inputPoint);
+    audioInput.connect(filter);
+    filter.connect(audioContext.destination);
+
+
+    // Save audioInput and filterNode for later access.
+    this.audioInput = audioInput;
+    this.filter = filter;
+
+    updateAnalysers();
+};
+
+FilterOne.stop = function() {
+  /*if (!this.audioInput.stop)
+    this.audioInput.stop = audioInput.noteOff;
+  this.audioInput.stop(0);*/
+  //this.audioInput.noteOff(0);
+  this.audioInput.disconnect(0);
+  updateAnalysers();
 };
 
 FilterOne.toggle = function() {
-  this.playing ? this.stop() : this.play();
+  var btn = document.getElementById("filterOneBtn");
+  if(this.playing){
+    this.stop()
+    btn.value = "turn filter on";
+  }else{
+    this.play();
+    btn.value = "turn filter off";
+  }
   this.playing = !this.playing;
 };
 
 FilterOne.changeFrequency = function(element) {
-  this.play();
   // Clamp the frequency between the minimum value (40 Hz) and half of the
   // sampling rate.
   var minValue = 40;
