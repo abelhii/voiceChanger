@@ -43,10 +43,10 @@ FilterOne.play = function(){
     filter.type = (typeof filter.type === 'string') ? 'lowpass' : 0; // LOWPASS
     filter.frequency.value = 5000;
     // Connect source/audioInput to filter, filter to destination.
-    audioInput.connect(inputPoint);
     audioInput.connect(filter);
     filter.connect(audioContext.destination);
 
+    audioRecorder = new Recorder(filter);
 
     // Save audioInput and filterNode for later access.
     this.audioInput = audioInput;
