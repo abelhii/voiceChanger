@@ -11,28 +11,51 @@
 	<script src="js/recorderjs/recorder.js"></script>
 	<script src="js/main.js"></script>
 	<script src="js/filter.js"></script>
-	
+  </script>
 </head>
 
 <body>
-	<div id="recordAudio">
-		<p>
-			<audio id="liveAudio" src="" controls autoplay muted>your browser doesnt support the audio element.</audio>
-			<img id="record" onclick="toggleRecording(this)" src="imgs/record.png"></img>
-			<a id="save" href="#"><img src="imgs/save.png"></a>
-			<img id="playSound" onclick="play(this)" src="imgs/playBtn.png"></img>
-			<audio id="playAudio" src="" controls>your browser doesnt support the audio element.</audio>
-			<!--Filter function-->
-			</br><input type="button" id="filterOneBtn"onclick="FilterOne.toggle()" value="turn filter on">
-			</br>Frequency:
-			<input type="range" id="frequency" oninput="FilterOne.changeFrequency(this);" min="0" max="1" step="0.01" value="1" >
-			</br>Quality:
-			<input type="range" id="quality" oninput="FilterOne.changeQuality(this);" min="0" max="1" step="0.01" value="1" >
-			<!--<input checked="true" oninput="FilterOne.toggleFilter(this);" type="checkbox">-->
-    	</p>
-			<canvas id="analyser" width="1024" height="300"></canvas>
+	<div id="container">
+		<h1 align = "center">Voice Changer</h1></br>
+		<canvas id="analyser"></canvas>
+		<audio id="liveAudio" src="" autoplay>your browser doesnt support the audio element.</audio>
+		<div id="buttons1">
+			<table id="t01">
+				<tr>
+					<td colspan = "5" align = "right">
+						<!--Biquad Filter-->
+						<input type="button" id="filterOneBtn"onclick="FilterOne.toggle()" value="Turn Biquad Filter On">
+						Frequency:
+						<input type="range" class = "slidestyle" id="frequency" oninput="FilterOne.changeFrequency(this);" min="0" max="1" step="0.01" value="0.5" >
+						</br>Quality:
+						<input type="range" class = "slidestyle" id="quality" oninput="FilterOne.changeQuality(this);" min="0" max="1" step="0.01" value="0.5" >
+						</br>Detune:
+						<input type="range" class = "slidestyle" id="detune" oninput="FilterOne.changeDetune(this);" min="0" max="1" step="0.01" value="0.5" >
+						</br>Gain:
+						<input type="range" class = "slidestyle" id="gain" oninput="FilterOne.changeGain(this);"  min="0" max="1" step="0.01" value="0.5">
+
+						<!--Delay Filter-->
+						</br></br><input type="button" id="DelayBtn" onclick="delayFilter.toggle()" value="turn Delay Filter On">
+						</br>Delay Time:
+						<input type="range" class = "slidestyle" id="delayTime" oninput="delayFilter.changeDelayTime(this);" min="0" max="5" step="0.1" value="1">
+
+
+						<!--Distortion Filter-->
+						</br>
+						</br><input type="button" id="DistBtn" onclick="distortFilter.toggle()" value="Turn Distortion Filter On">
+						</br>Distortion Curve:
+						<input type="range" class = "slidestyle" id="distortion" oninput="distortFilter.changeCurve(this);" min="0" max="500" step="0.01" value="1">
+					</td>	
+				</tr>
+				<tr>
+					<td colspan="5" align = "center">
+						<img id="record" onclick="toggleRecording(this)" src="imgs/record.png"></img>
+						<a id="save" href="#"><img src="imgs/save.png"></a>
+					</td>	
+				</tr>
+			</table> 
+		</div>	
 	</div>
 
 </body>
-
 </html>
