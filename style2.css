@@ -7,14 +7,14 @@
 		height: 20%;
 		width: 100%;
 	}
-	#record { height: 15vh; }
+	#record { height: 13vh; }
 	#record.recording { 
 		background: red;
-		background: -webkit-radial-gradient(center, ellipse cover, #ff0000 0%,white 75%,white 100%,#7db9e8 100%); 
-		background: -moz-radial-gradient(center, ellipse cover, #ff0000 0%,white 75%,white 100%,#7db9e8 100%); 
-		background: radial-gradient(center, ellipse cover, #ff0000 0%,white 75%,white 100%,#7db9e8 100%); 
+		background: -webkit-radial-gradient(center, ellipse cover, #ff0000 0%,#6e6e6e 75%,#6e6e6e 100%,#7db9e8 100%); 
+		background: -moz-radial-gradient(center, ellipse cover, #ff0000 0%,#6e6e6e 75%,#6e6e6e 100%,#7db9e8 100%); 
+		background: radial-gradient(center, ellipse cover, #ff0000 0%,#6e6e6e 75%,#6e6e6e 100%,#7db9e8 100%); 
 	}
-	#save, #save img { height: 10vh; }
+	#save, #save img { height: 11vh; }
 	#save { opacity: 0.25;}
 	#save[download] { opacity: 1;}
 	#viz {
